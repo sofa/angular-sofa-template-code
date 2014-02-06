@@ -89,6 +89,17 @@
     }
 }
 
+// tint() and shade() from https://github.com/thoughtbot/bourbon/blob/master/app/assets/stylesheets/functions/_tint-shade.scss
+// Add percentage of white to a color
+@function tint($color, $percent){
+    @return mix(white, $color, $percent);
+}
+
+// Add percentage of black to a color
+@function shade($color, $percent){
+    @return mix(black, $color, $percent);
+}
+
 @mixin button-gradient($bg-color){
 
     $background-color-mid: darken($bg-color, 10%);
