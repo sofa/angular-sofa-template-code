@@ -11,11 +11,27 @@ cc.define('cc.DeviceService', function($window){
 
     var ua = navigator.userAgent,
         htmlTag,
+        isIpadOnIos7,
         uaindex,
         userOS,
         userOSver;
 
-    var MODERN_FLEXBOX_SUPPORT = 'cc-supports-modern-flexbox';
+    var MODERN_FLEXBOX_SUPPORT = 'cc-supports-modern-flexbox',
+        FIX_IPAD_ON_IOS_7 = 'cc-fix-ipad-ios-7';
+
+    /**
+     * @method getHtmlTag
+     * @memberof cc.DeviceService
+     *
+     * @description
+     * Returns an HTMLDomObject for HTML.
+     *
+     * @return {object} HTMLDomObject
+     */
+    self.getHtmlTag = function(){
+        htmlTag = htmlTag || document.getElementsByTagName('html')[0];
+        return htmlTag;
+    };
 
     // determine OS
     if ( ua.match(/iPad/i) || ua.match(/iPhone/i) ){
@@ -48,9 +64,52 @@ cc.define('cc.DeviceService', function($window){
         dimensions.height = $window.innerHeight;
     };
 
+    /**
+     * @method setViewHeight
+     * @memberof cc.DeviceService
+     *
+     * @description
+     * Set HTML element's height to viewport height.
+     *
+     * @param height {int}
+     */
+    self.setViewHeight = function (height) {
+        var htmlTag = self.getHtmlTag();
+        htmlTag.style.height = height + 'px';
+    };
+
+    /**
+     * @method fixIpadOnIos7
+     * @memberof cc.DeviceService
+     *
+     * @description
+     * Helps fixing an "iOS 7 on iPad in landscape mode" bug, where window's innerHeight and outerHeight values differ.
+     * This makes 100% height higher than the actual viewport and for this reason enables page scrolling.
+     * See http://stackoverflow.com/questions/18855642/ios-7-css-html-height-100-692px
+     * or http://stackoverflow.com/questions/19012135/ios-7-ipad-safari-landscape-innerheight-outerheight-layout-issue
+     */
+    self.fixIpadOnIos7 = function () {
+        if (self.getHtmlTag().className.indexOf(FIX_IPAD_ON_IOS_7) === -1) {
+            self.getHtmlTag().className = self.getHtmlTag().className + ' ' + FIX_IPAD_ON_IOS_7;
+        }
+        self.setViewHeight(dimensions.height);
+    };
+
+    // determine iPad + iOS7 for landscape innerHeight bug,
+    isIpadOnIos7 = ua.match(/iPad/i) && userOSver.substr(0, 1) === '7';
+
+    if (isIpadOnIos7) {
+        self.fixIpadOnIos7();
+    }
+
     updateDimension();
 
-    $window.addEventListener("orientationchange", updateDimension, false);
+    $window.addEventListener("orientationchange", function () {
+        updateDimension();
+        if (isIpadOnIos7) {
+            self.setViewHeight(dimensions.height);
+        }
+    }, false);
 
     var versionStartsWith = function(str){
         var version = self.getOsVersion();
@@ -81,20 +140,6 @@ cc.define('cc.DeviceService', function($window){
      */
     self.isInLandscapeMode = function(){
         return !self.isInPortraitMode();
-    };
-
-    /**
-     * @method getHtmlTag
-     * @memberof cc.DeviceService
-     *
-     * @description
-     * Returns an HTMLDomObject for HTML.
-     *
-     * @return {object} HTMLDomObject
-     */
-    self.getHtmlTag = function(){
-        htmlTag = htmlTag || document.getElementsByTagName('html')[0];
-        return htmlTag;
     };
 
     /**
