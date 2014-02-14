@@ -16,6 +16,11 @@
   #{$name}: $argument;
 }
 
+@mixin clearfix {
+    content: "";
+    display: table;
+    clear: both;
+}
 
 @mixin anti-blurry {
     -webkit-transform: translate3d(0,0,0);
