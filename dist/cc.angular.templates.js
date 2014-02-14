@@ -97,7 +97,7 @@ angular.module("src/directives/ccGoUpControl/cc-go-up-control.tpl.html", []).run
     "    <cc-go-up-button class=\"cc-go-up-control\" ng-if=\"getParentLabel()\">\n" +
     "        <i class=\"cc-go-up-control__icon\">\n" +
     "        </i>\n" +
-    "        <span bo-text=\"getParentLabel()\"></span>\n" +
+    "        <span class=\"cc-go-up-control__text\" bo-text=\"getParentLabel()\"></span>\n" +
     "    </cc-go-up-button>");
 }]);
 
@@ -144,7 +144,7 @@ angular.module("src/directives/ccSelectBox/ccselectbox.tpl.html", []).run(["$tem
     "<div class=\"cc-select-box\">\n" +
     "     <span class=\"cc-select-box__display-value\" ng-bind=\"displayFn(_selectedValue)\"></span>\n" +
     "     <span class=\"cc-select-box__display-value\" ng-hide=\"_selectedValue\">{{chooseText}} {{propertyName}}</span>\n" +
-    "     <i class=\"cc-select-box__select-icon fa fa-chevron-down\"></i>\n" +
+    "     <i class=\"cc-select-box__select-icon\"></i>\n" +
     "    <select name=\"{{propertyName}}\"\n" +
     "            class=\"cc-select-box__native-select\" \n" +
     "            ng-model=\"_selectedValue\" \n" +

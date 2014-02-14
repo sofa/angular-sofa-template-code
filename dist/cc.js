@@ -1529,7 +1529,7 @@ cc.define('cc.DeviceService', function($window){
         userOSver;
 
     var MODERN_FLEXBOX_SUPPORT = 'cc-supports-modern-flexbox',
-        FIX_IPAD_ON_IOS_7 = 'cc-fix-ipad-ios-7';
+        IPAD_ON_IOS_7 = 'cc-ipad-ios-7';
 
     /**
      * @method getHtmlTag
@@ -1569,6 +1569,22 @@ cc.define('cc.DeviceService', function($window){
         userOSver = 'unknown';
     }
 
+    // determine iPad + iOS7 (for landscape innerHeight bug, see flagIpadOnIos7() )
+    isIpadOnIos7 = ua.match(/iPad/i) && userOSver.substr(0, 1) === '7';
+
+    /**
+     * @method isIpadOnIos7
+     * @memberof cc.DeviceService
+     *
+     * @description
+     * Returns a boolean indicating whether the device is an iPad running iOS7 or not.
+     *
+     * @return {boolean}
+     */
+    self.isIpadOnIos7 = function () {
+        return isIpadOnIos7;
+    };
+
     var dimensions = {};
 
     var updateDimension = function(){
@@ -1576,56 +1592,26 @@ cc.define('cc.DeviceService', function($window){
         dimensions.height = $window.innerHeight;
     };
 
-    /**
-     * @method setViewHeight
-     * @memberof cc.DeviceService
-     *
-     * @description
-     * Set HTML element's height to viewport height.
-     *
-     * @param height {int}
-     */
-    self.setViewHeight = function (height) {
-        var htmlTag = self.getHtmlTag();
-        htmlTag.style.height = height + 'px';
-    };
-
-    /**
-     * @method fixIpadOnIos7
-     * @memberof cc.DeviceService
-     *
-     * @description
-     * Helps fixing an "iOS 7 on iPad in landscape mode" bug, where window's innerHeight and outerHeight values differ.
-     * This makes 100% height higher than the actual viewport and for this reason enables page scrolling.
-     * See http://stackoverflow.com/questions/18855642/ios-7-css-html-height-100-692px
-     * or http://stackoverflow.com/questions/19012135/ios-7-ipad-safari-landscape-innerheight-outerheight-layout-issue
-     */
-    self.fixIpadOnIos7 = function () {
-        if (self.getHtmlTag().className.indexOf(FIX_IPAD_ON_IOS_7) === -1) {
-            self.getHtmlTag().className = self.getHtmlTag().className + ' ' + FIX_IPAD_ON_IOS_7;
-        }
-        self.setViewHeight(dimensions.height);
-    };
-
-    // determine iPad + iOS7 for landscape innerHeight bug,
-    isIpadOnIos7 = ua.match(/iPad/i) && userOSver.substr(0, 1) === '7';
-
-    if (isIpadOnIos7) {
-        self.fixIpadOnIos7();
-    }
-
     updateDimension();
 
-    $window.addEventListener("orientationchange", function () {
-        updateDimension();
-        if (isIpadOnIos7) {
-            self.setViewHeight(dimensions.height);
-        }
-    }, false);
+    $window.addEventListener("orientationchange", updateDimension, false);
 
     var versionStartsWith = function(str){
         var version = self.getOsVersion();
         return version.indexOf(str) === 0;
+    };
+
+    /**
+     * @method getViewportDimensions
+     * @memberof cc.DeviceService
+     *
+     * @description
+     * Returns the height of the viewport
+     *
+     * @return {int}
+     */
+    self.getViewportDimensions = function () {
+        return dimensions;
     };
 
     /**
@@ -1828,6 +1814,19 @@ cc.define('cc.DeviceService', function($window){
         if (self.hasModernFlexboxSupport()){
             htmlTag.className += ' ' + MODERN_FLEXBOX_SUPPORT;
         }
+    };
+
+    /**
+     * @method flagIpadOnIos7
+     * @memberof cc.DeviceService
+     *
+     * @description
+     * Flags the document with an SDK specific class to help getting around a bug in iOS7 on iPad landscape mode.
+     * see http://stackoverflow.com/questions/18855642/ios-7-css-html-height-100-692px
+     */
+    self.flagIpadOnIos7 = function() {
+        var htmlTag = self.getHtmlTag();
+        htmlTag.className += ' ' + IPAD_ON_IOS_7;
     };
 
     return self;
