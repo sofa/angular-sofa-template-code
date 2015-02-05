@@ -1,5 +1,5 @@
 /**
- * angular-sofa-template-code - v0.1.0 - Thu Feb 05 2015 09:50:45 GMT+0100 (CET)
+ * angular-sofa-template-code - v0.1.1 - Thu Feb 05 2015 10:47:26 GMT+0100 (CET)
  * http://www.sofa.io
  *
  * Copyright (c) 2014 CouchCommerce GmbH (http://www.couchcommerce.com / http://www.sofa.io) and other contributors
@@ -30,6 +30,4 @@ angular.module('sofa.templateCode', [])
             }
         };
     });
-
-
 }(sofa, document));
