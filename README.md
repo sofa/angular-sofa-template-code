@@ -1,6 +1,6 @@
 # Angular Sofa Template Code
 
-Angular price component
+Angular template code component
 
 ## Installation
 
